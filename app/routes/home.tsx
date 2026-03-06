@@ -1,7 +1,9 @@
 import type { Route } from "./+types/home";
 import Navbar from "../../components/Navbar";
-import { ArrowRight, ArrowUpRight, Clock, Layers, Upload } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Clock, Layers, } from "lucide-react";
 import Button from "components/ui/Button";
+import Upload from "../../components/Upload";
+import {useNavigate} from "react-router";
 
 
 
@@ -13,6 +15,15 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
+    const navigate = useNavigate();
+    // const [projects, setProjects] = useState<DesignItem[]>([]);
+    // const isCreatingProjectRef = useRef(false);
+
+    const handleUploadComplete = async (base64Image: string) => {
+        const newId = Date.now().toString();
+        navigate(`/visualizer/${newId}`);
+        return true;
+    }
 
   return (
       <div className="home">
@@ -23,7 +34,7 @@ export default function Home() {
                       <div className="pulse"></div>
                   </div>
 
-                  <p>Introducing Roomfix 2.0</p>
+                  <p>Introducing Roomfix 2.1</p>
               </div>
 
               <h1>Build beautiful spaces at the speed of thought with Roomfix</h1>
@@ -55,7 +66,7 @@ export default function Home() {
                           <p>Supports JPG, PNG, formats up to 10MB</p>
                       </div>
 
-                      {/*<Upload onComplete={handleUploadComplete} />*/}
+                      <Upload onComplete={handleUploadComplete} />
                   </div>
               </div>
           </section>
