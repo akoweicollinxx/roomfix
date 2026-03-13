@@ -1,89 +1,116 @@
-import {CheckCircle2, ImageIcon, UploadIcon } from "lucide-react";
-import React, {useState} from 'react'
-import { useOutletContext } from "react-router";
-import { PROGRESS_INTERVAL_MS, PROGRESS_STEP, REDIRECT_DELAY_MS } from "../lib/constants";
+import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {useOutletContext} from "react-router";
+import {CheckCircle2, ImageIcon, UploadIcon} from "lucide-react";
+import {PROGRESS_INCREMENT, REDIRECT_DELAY_MS, PROGRESS_INTERVAL_MS} from "../lib/constants";
 
 interface UploadProps {
-    onComplete?: (data: string) => void;
+    onComplete?: (base64Data: string) => void;
 }
 
 const Upload = ({ onComplete }: UploadProps) => {
     const [file, setFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [progress, setProgress] = useState(0);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const { isSignedIn } = useOutletContext<AuthContext>();
 
-    const processFile = (file: File) => {
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
+        };
+    }, []);
+
+    const processFile = useCallback((file: File) => {
         if (!isSignedIn) return;
+
         setFile(file);
         setProgress(0);
 
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const base64 = e.target?.result as string;
-            
-            const interval = setInterval(() => {
+        reader.onerror = () => {
+            setFile(null);
+            setProgress(0);
+        };
+        reader.onloadend = () => {
+            const base64Data = reader.result as string;
+
+            intervalRef.current = setInterval(() => {
                 setProgress((prev) => {
-                    if (prev >= 100) {
-                        clearInterval(interval);
-                        setTimeout(() => {
-                            onComplete?.(base64);
+                    const next = prev + PROGRESS_INCREMENT;
+                    if (next >= 100) {
+                        if (intervalRef.current) {
+                            clearInterval(intervalRef.current);
+                            intervalRef.current = null;
+                        }
+                        timeoutRef.current = setTimeout(() => {
+                            onComplete?.(base64Data);
+                            timeoutRef.current = null;
                         }, REDIRECT_DELAY_MS);
                         return 100;
                     }
-                    return Math.min(prev + PROGRESS_STEP, 100);
+                    return next;
                 });
             }, PROGRESS_INTERVAL_MS);
         };
         reader.readAsDataURL(file);
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = e.target.files?.[0];
-        if (selectedFile) {
-            processFile(selectedFile);
-        }
-    };
+    }, [isSignedIn, onComplete]);
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
-        if (isSignedIn) {
-            setIsDragging(true);
-        }
+        if (!isSignedIn) return;
+        setIsDragging(true);
     };
 
-    const handleDragLeave = (e: React.DragEvent) => {
-        e.preventDefault();
+    const handleDragLeave = () => {
         setIsDragging(false);
     };
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
+
         if (!isSignedIn) return;
 
-        const droppedFile = e.dataTransfer.files?.[0];
-        if (droppedFile && droppedFile.type.startsWith('image/')) {
+        const droppedFile = e.dataTransfer.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (droppedFile && allowedTypes.includes(droppedFile.type)) {
             processFile(droppedFile);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!isSignedIn) return;
+
+        const selectedFile = e.target.files?.[0];
+        if (selectedFile) {
+            processFile(selectedFile);
         }
     };
 
     return (
         <div className="upload">
             {!file ? (
-                <div 
+                <div
                     className={`dropzone ${isDragging ? 'is-dragging' : ''}`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                 >
                     <input
-                        type="file" 
-                        className="drop-input" 
-                        accept='.png, .jpg, .jpeg' 
+                        type="file"
+                        className="drop-input"
+                        accept=".jpg,.jpeg,.png,.webp"
                         disabled={!isSignedIn}
-                        onChange={handleFileChange}
+                        onChange={handleChange}
                     />
 
                     <div className="drop-content">
