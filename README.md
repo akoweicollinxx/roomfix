@@ -24,6 +24,14 @@ Install the dependencies:
 npm install
 ```
 
+### Environment Variables
+
+Copy the `.env.example` file to `.env.local` and fill in the required values:
+
+```bash
+cp .env.example .env.local
+```
+
 ### Development
 
 Start the development server with HMR:
