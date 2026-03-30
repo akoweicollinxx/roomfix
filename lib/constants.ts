@@ -25,32 +25,63 @@ export const UNAUTHORIZED_STATUSES = [401, 403];
 export const IMAGE_RENDER_DIMENSION = 1024;
 
 export const ROOMFIX_RENDER_PROMPT = `
-TASK: Convert the input 2D floor plan into a **photorealistic, top‑down 3D architectural render**.
+TASK: Fully redesign and furnish the uploaded room into a high-end, photorealistic interior space.
 
-STRICT REQUIREMENTS (do not violate):
-1) **REMOVE ALL TEXT**: Do not render any letters, numbers, labels, dimensions, or annotations. Floors must be continuous where text used to be.
-2) **GEOMETRY MUST MATCH**: Walls, rooms, doors, and windows must follow the exact lines and positions in the plan. Do not shift or resize.
-3) **TOP‑DOWN ONLY**: Orthographic top‑down view. No perspective tilt.
-4) **CLEAN, REALISTIC OUTPUT**: Crisp edges, balanced lighting, and realistic materials. No sketch/hand‑drawn look.
-5) **NO EXTRA CONTENT**: Do not add rooms, furniture, or objects that are not clearly indicated by the plan.
+STRICT RULES:
+1) PRESERVE STRUCTURE:
+   - Keep the original room’s walls, floor, ceiling, windows, and doors EXACTLY as they are.
+   - Do NOT change layout, dimensions, or camera perspective.
 
-STRUCTURE & DETAILS:
-- **Walls**: Extrude precisely from the plan lines. Consistent wall height and thickness.
-- **Doors**: Convert door swing arcs into open doors, aligned to the plan.
-- **Windows**: Convert thin perimeter lines into realistic glass windows.
+2) COMPLETE INTERIOR DESIGN:
+   - Completely redesign the interior from scratch.
+   - Replace any existing furniture with a cohesive, professionally designed setup.
+   - Furnish the space fully based on the room type.
 
-FURNITURE & ROOM MAPPING (only where icons/fixtures are clearly shown):
-- Bed icon → realistic bed with duvet and pillows.
-- Sofa icon → modern sectional or sofa.
-- Dining table icon → table with chairs.
-- Kitchen icon → counters with sink and stove.
-- Bathroom icon → toilet, sink, and tub/shower.
-- Office/study icon → desk, chair, and minimal shelving.
-- Porch/patio/balcony icon → outdoor seating or simple furniture (keep minimal).
-- Utility/laundry icon → washer/dryer and minimal cabinetry.
+3) SMART ROOM DETECTION:
+   - Identify the room type automatically (living room, bedroom, kitchen, bathroom, office, etc.).
+   - Apply appropriate interior design principles for that space.
 
-STYLE & LIGHTING:
-- Lighting: bright, neutral daylight. High clarity and balanced contrast.
-- Materials: realistic wood/tile floors, clean walls, subtle shadows.
-- Finish: professional architectural visualization; no text, no watermarks, no logos.
+4) FULL FURNISHING (MANDATORY):
+   - Add realistic, properly scaled furniture and decor to make the space complete and livable.
+
+   Examples:
+   - Living Room → sofa, coffee table, TV unit, rug, lighting, decor
+   - Bedroom → bed, bedside tables, lamps, wardrobe, soft furnishings
+   - Kitchen → cabinets, counters, stools, appliances, lighting
+   - Bathroom → sink, toilet, shower/tub, mirror, lighting
+   - Office → desk, chair, shelving, lighting
+
+5) DESIGN QUALITY:
+   - Follow high-end interior design standards (balance, spacing, symmetry, proportion).
+   - Ensure the space feels intentional, not random or cluttered.
+
+6) STYLE APPLICATION:
+   - Apply a cohesive design style (based on user input if provided).
+   - Maintain consistent colors, materials, and finishes across all elements.
+
+7) MATERIALS & TEXTURES:
+   - Use realistic materials: wood, marble, fabric, glass, metal, stone.
+   - Avoid artificial or plastic-looking surfaces.
+
+8) LIGHTING:
+   - Use natural daylight as the base.
+   - Add realistic interior lighting (ceiling lights, lamps, ambient lighting).
+
+9) REALISM:
+   - Ensure furniture scale, spacing, and placement are physically realistic.
+   - Output must look like a real photograph, not CGI or illustration.
+
+10) CLEAN OUTPUT:
+   - No text, labels, watermarks, or overlays.
+
+STYLE OPTIONS (optional input):
+- modern luxury
+- minimalist
+- scandinavian
+- industrial
+- contemporary
+- bohemian
+
+OUTPUT:
+A fully furnished, professionally designed, photorealistic version of the same room with preserved structure and enhanced interior.
 `.trim();

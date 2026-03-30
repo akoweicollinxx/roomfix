@@ -6,7 +6,7 @@ import Button from "../../components/ui/Button";
 import {createProject, getProjectById} from "../../lib/puter.action";
 import {ReactCompareSlider, ReactCompareSliderImage} from "react-compare-slider";
 
-const VisualizerId = () => {
+const Visualizer = () => {
     const { id } = useParams()
     const navigate = useNavigate();
     const { userId } = useOutletContext<AuthContext>();
@@ -143,10 +143,10 @@ const VisualizerId = () => {
                                 >
                                     <Download className="w-4 h-4 mr-2" /> Export
                                 </Button>
-                                <Button size="sm" onClick={() => {}} className="share">
-                                    <Share2 className="w-4 h-4 mr-2" />
-                                    Share
-                                </Button>
+                                {/*<Button size="sm" onClick={() => {}} className="share">*/}
+                                {/*    <Share2 className="w-4 h-4 mr-2" />*/}
+                                {/*    Share*/}
+                                {/*</Button>*/}
                             </div>
                         </div>
 
@@ -209,4 +209,4 @@ const VisualizerId = () => {
             </div>
     )
 }
-export default VisualizerId
+export default Visualizer
